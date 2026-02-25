@@ -1,0 +1,204 @@
+.lotto-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 800px; /* 좀 더 넓게 변경 */
+  margin: 0 auto;
+}
+
+/* 탭 스타일 */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.tabs button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  background: #333;
+  color: #888;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.3s;
+  font-weight: bold;
+}
+
+.tabs button.active {
+  background: #6e8efb;
+  color: white;
+}
+
+.tab-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 세트 디스플레이 */
+.sets-display {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.set-row {
+  background: #2a2a2a;
+  padding: 15px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #333;
+}
+
+.set-label {
+  font-size: 0.9rem;
+  color: #aaa;
+  font-weight: bold;
+  text-align: left;
+}
+
+.set-balls {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ball-with-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.ball-stats-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.7rem;
+  color: #888;
+  line-height: 1.2;
+}
+
+.stat-count { color: #aaa; }
+.stat-prob { color: #6e8efb; font-weight: bold; }
+
+.ball {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  box-shadow: inset -3px -3px 6px rgba(0,0,0,0.3), 3px 3px 6px rgba(0,0,0,0.2);
+  animation: bounceIn 0.5s ease-out;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.generate-btn {
+  padding: 1rem 1.8rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 15px;
+  border: none;
+  background: #444;
+  color: white;
+  transition: all 0.2s;
+}
+
+.generate-btn.weighted {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.generate-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* 통계 섹션 스타일 */
+.stats-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
+  text-align: left;
+}
+
+.stats-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #333;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.mini-ball {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: white;
+}
+
+.bar-container {
+  flex-grow: 1;
+  height: 12px;
+  background: #222;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, #6e8efb, #a777e3);
+  border-radius: 6px;
+}
+
+.count-text {
+  min-width: 45px;
+  font-size: 0.85rem;
+  color: #eee;
+  text-align: right;
+}
+
+.ball-yellow { background-color: #fbc400; }
+.ball-blue { background-color: #69c8f2; }
+.ball-red { background-color: #ff7272; }
+.ball-grey { background-color: #aaaaaa; }
+.ball-green { background-color: #b0d840; }
+
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
