@@ -138,38 +138,6 @@
 }
 
 /* 통계 섹션 스타일 */
-.analysis-cards {
-  display: flex;
-  gap: 15px;
-  width: 100%;
-  margin-bottom: 1.5rem;
-}
-
-.analysis-card {
-  flex: 1;
-  background: #2a2a2a;
-  padding: 1.2rem;
-  border-radius: 15px;
-  border: 1px solid #333;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.analysis-card h4 {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #eee;
-}
-
-.analysis-balls {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 .stats-grid {
   width: 100%;
   display: grid;
