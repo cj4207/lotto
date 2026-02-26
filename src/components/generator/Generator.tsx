@@ -16,6 +16,10 @@ export const Generator: React.FC<GeneratorProps> = ({ sets, onGenerate }) => {
 
   return (
     <div className="tab-content">
+      {/* React 19 SEO Hoisting */}
+      <title>번호 생성 - 로또 연구소</title>
+      <meta name="description" content="AI와 통계 데이터를 활용하여 이번 주 행운의 로또 번호를 생성해보세요." />
+
       <div className="button-group main-buttons">
         <button className="generate-btn" onClick={() => onGenerate(false)}>
           무작위 5개 생성

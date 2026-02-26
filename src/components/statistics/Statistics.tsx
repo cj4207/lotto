@@ -17,6 +17,10 @@ export const Statistics: React.FC = () => {
 
   return (
     <div className="tab-content stats-content">
+      {/* React 19 SEO Hoisting */}
+      <title>출현 통계 - 로또 연구소</title>
+      <meta name="description" content="역대 로또 당첨 번호 데이터를 분석하여 가장 많이 나온 숫자와 적게 나온 숫자를 확인하세요." />
+
       <h3>번호별 누적 출현 횟수</h3>
       <p className="stats-info">동행복권 데이터를 기반으로 한 통계입니다.</p>
       
