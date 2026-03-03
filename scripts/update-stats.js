@@ -1,84 +1,72 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const STATS_PATH = path.join(process.cwd(), 'src/data/stats.ts');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const STATS_PATH = path.resolve(__dirname, '../src/data/stats.ts');
 
 async function updateStats() {
   try {
-    const content = fs.readFileSync(STATS_PATH, 'utf-8');
-    const totalDrawsMatch = content.match(/TOTAL_DRAWS = (\d+)/);
-    if (!totalDrawsMatch) {
-      console.error('TOTAL_DRAWS를 찾을 수 없습니다.');
-      return;
-    }
-    let currentDraw = parseInt(totalDrawsMatch[1]);
-
-    console.log(`현재 저장된 최신 회차: ${currentDraw}`);
-
-    const statsMatch = content.match(/LOTTO_STATS: Record<number, number> = ({[\s\S]*?});/);
-    if (!statsMatch) {
-      console.error('LOTTO_STATS를 찾을 수 없습니다.');
-      return;
-    }
+    console.log('최신 로또 회차 정보를 확인하는 중...');
     
-    const statsStr = statsMatch[1];
+    // 1. 최신 회차 번호 추출 (JSON 응답 활용)
+    const historyUrl = 'https://www.dhlottery.co.kr/lt645/selectLt645History.do';
+    const historyResponse = await fetch(historyUrl);
+    const historyData = await historyResponse.json();
+
+    const latestDraw = historyData.data?.lastLtEpsd;
+
+    if (!latestDraw) {
+      console.error('최신 회차 정보를 가져오지 못했습니다. 응답 구조를 확인해주세요.');
+      console.log('응답 데이터:', JSON.stringify(historyData));
+      return;
+    }
+    console.log(`확인된 최신 회차: ${latestDraw}`);
+
+    // 2. 번호별 누적 통계 데이터 가져오기
+    console.log('번호별 누적 통계 데이터를 가져오는 중...');
+    // 통계 페이지는 HTML 형식이므로 text()를 유지하되, 회차 범위를 동적으로 설정합니다.
+    const statsUrl = `https://www.dhlottery.co.kr/lt645/selectLt645NoStats.do?srchStrLtEpsd=1&srchEndLtEpsd=${latestDraw}&srchBnsYn=N`;
+    const statsResponse = await fetch(statsUrl);
+    const statsHtml = await statsResponse.text();
+
     const stats = {};
-    const pairs = statsStr.match(/\d+: \d+/g);
-    if (pairs) {
-      pairs.forEach(pair => {
-        const [num, count] = pair.split(': ').map(Number);
-        stats[num] = count;
-      });
+    // <td>번호</td> <td class="ta_right">횟수</td> 패턴 추출
+    for (let i = 1; i <= 45; i++) {
+      const regex = new RegExp(`<td>${i}<\/td>\\s*<td[^>]*>(\\d+)<\/td>`);
+      const match = statsHtml.match(regex);
+      if (match) {
+        stats[i] = parseInt(match[1]);
+      }
     }
 
-    let nextDraw = currentDraw + 1;
-    let hasChanged = false;
-
-    while (true) {
-      console.log(`${nextDraw}회차 조회 중...`);
-      const response = await fetch(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${nextDraw}`);
-      const data = await response.json();
-
-      if (data.returnValue === 'fail' || !data.drwtNo1) {
-        console.log(`${nextDraw}회차 데이터가 아직 없습니다.`);
-        break;
-      }
-
-      // 당첨 번호 6개 반영 (보너스 제외)
-      for (let i = 1; i <= 6; i++) {
-        const num = data[`drwtNo${i}`];
-        stats[num] = (stats[num] || 0) + 1;
-      }
-      
-      currentDraw = nextDraw;
-      nextDraw++;
-      hasChanged = true;
-      console.log(`${currentDraw}회차 반영 완료`);
+    if (Object.keys(stats).length < 45) {
+      console.warn(`일부 번호 데이터가 누락되었습니다. (찾은 번호 개수: ${Object.keys(stats).length})`);
     }
 
-    if (hasChanged) {
-      let formattedStats = `{\n  `;
-      const sortedKeys = Object.keys(stats).map(Number).sort((a, b) => a - b);
-      for (let i = 0; i < sortedKeys.length; i++) {
-        const num = sortedKeys[i];
-        formattedStats += `${num}: ${stats[num]}`;
-        if (i < sortedKeys.length - 1) {
-          formattedStats += (i + 1) % 10 === 0 ? `,\n  ` : `, `;
-        }
+    // 3. 파일 업데이트 (src/data/stats.ts)
+    let formattedStats = `{\n  `;
+    const sortedKeys = Object.keys(stats).map(Number).sort((a, b) => a - b);
+    for (let i = 0; i < sortedKeys.length; i++) {
+      const num = sortedKeys[i];
+      formattedStats += `${num}: ${stats[num]}`;
+      if (i < sortedKeys.length - 1) {
+        formattedStats += (i + 1) % 10 === 0 ? `,\n  ` : `, `;
       }
-      formattedStats += `\n};`;
-
-      const newContent = content
-        .replace(/LOTTO_STATS: Record<number, number> = {[\s\S]*?};/, `LOTTO_STATS: Record<number, number> = ${formattedStats}`)
-        .replace(/TOTAL_DRAWS = \d+/, `TOTAL_DRAWS = ${currentDraw}`);
-
-      fs.writeFileSync(STATS_PATH, newContent);
-      console.log(`파일 업데이트 완료: ${currentDraw}회차`);
-    } else {
-      console.log('이미 최신 상태입니다.');
     }
+    formattedStats += `\n};`;
+
+    const content = fs.readFileSync(STATS_PATH, 'utf-8');
+    const newContent = content
+      .replace(/LOTTO_STATS: Record<number, number> = {[\s\S]*?};/, `LOTTO_STATS: Record<number, number> = ${formattedStats}`)
+      .replace(/TOTAL_DRAWS = \d+/, `TOTAL_DRAWS = ${latestDraw}`);
+
+    fs.writeFileSync(STATS_PATH, newContent);
+    console.log(`성공적으로 업데이트되었습니다. (최신 회차: ${latestDraw})`);
+
   } catch (error) {
-    console.error('오류 발생:', error);
+    console.error('업데이트 중 오류 발생:', error);
   }
 }
 
