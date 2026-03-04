@@ -1,19 +1,35 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { LOTTO_STATS } from '../../data/stats';
 import { Ball } from '../common/Ball';
 
+type SortType = 'number' | 'count';
+
 export const Statistics: React.FC = () => {
-  const statsEntries = useMemo(() => Object.entries(LOTTO_STATS), []);
+  const [sortType, setSortType] = useState<SortType>('number');
+  
+  const statsEntries = useMemo(() => {
+    const entries = Object.entries(LOTTO_STATS).map(([num, count]) => [parseInt(num), count] as [number, number]);
+    if (sortType === 'number') {
+      return entries.sort((a, b) => a[0] - b[0]);
+    } else {
+      return entries.sort((a, b) => b[1] - a[1]);
+    }
+  }, [sortType]);
+
   const maxCount = useMemo(() => Math.max(...Object.values(LOTTO_STATS)), []);
   
-  // 데이터 분석
+  // 데이터 분석 (상단 요약용은 고정)
   const topNumbers = useMemo(() => 
-    [...statsEntries].sort((a, b) => b[1] - a[1]).slice(0, 6)
-  , [statsEntries]);
+    Object.entries(LOTTO_STATS)
+      .sort((a, b) => (b[1] as number) - (a[1] as number))
+      .slice(0, 6)
+  , []);
 
   const bottomNumbers = useMemo(() => 
-    [...statsEntries].sort((a, b) => a[1] - b[1]).slice(0, 6)
-  , [statsEntries]);
+    Object.entries(LOTTO_STATS)
+      .sort((a, b) => (a[1] as number) - (b[1] as number))
+      .slice(0, 6)
+  , []);
 
   return (
     <div className="tab-content stats-content">
@@ -43,10 +59,25 @@ export const Statistics: React.FC = () => {
         </div>
       </div>
 
+      <div className="filter-container">
+        <button 
+          className={`filter-btn ${sortType === 'number' ? 'active' : ''}`}
+          onClick={() => setSortType('number')}
+        >
+          번호순
+        </button>
+        <button 
+          className={`filter-btn ${sortType === 'count' ? 'active' : ''}`}
+          onClick={() => setSortType('count')}
+        >
+          횟수순
+        </button>
+      </div>
+
       <div className="stats-grid">
         {statsEntries.map(([num, count]) => (
           <div key={num} className="stats-item">
-            <Ball num={parseInt(num)} size="small" />
+            <Ball num={num} size="small" />
             <div className="bar-container">
               <div 
                 className="bar" 

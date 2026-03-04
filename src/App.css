@@ -4,7 +4,7 @@
   align-items: center;
   gap: 1.5rem;
   width: 100%;
-  max-width: 800px; /* 좀 더 넓게 변경 */
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -138,6 +138,31 @@
 }
 
 /* 통계 섹션 스타일 */
+.filter-container {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.filter-btn {
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  border-radius: 20px;
+  border: 1px solid #444;
+  background: #2a2a2a;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn.active {
+  background: #6e8efb;
+  color: white;
+  border-color: #6e8efb;
+}
+
 .analysis-cards {
   display: flex;
   gap: 15px;
@@ -233,4 +258,64 @@
   0% { transform: scale(0); }
   70% { transform: scale(1.1); }
   100% { transform: scale(1); }
+}
+
+/* Simulation Styles */
+.sim-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.sim-result {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-align: left;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sim-more {
+  font-size: 0.75rem;
+  color: #666;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.sim-result.none {
+  color: #666;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sim-rank {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.sim-info {
+  color: #aaa;
+  font-size: 0.8rem;
+}
+
+/* 등수별 강조색 */
+.rank-1, .rank-2 {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+}
+
+.rank-3 {
+  background: rgba(110, 142, 251, 0.1);
+  border-color: rgba(110, 142, 251, 0.3);
+  color: #6e8efb;
+}
+
+.rank-4, .rank-5 {
+  background: rgba(245, 87, 108, 0.1);
+  border-color: rgba(245, 87, 108, 0.3);
+  color: #f5576c;
 }

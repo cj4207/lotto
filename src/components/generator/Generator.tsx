@@ -1,9 +1,10 @@
 import React from 'react';
 import { Ball } from '../common/Ball';
 import { LOTTO_STATS, TOTAL_DRAWS } from '../../data/stats';
+import { LottoSet } from '../../hooks/useLotto';
 
 interface GeneratorProps {
-  sets: number[][];
+  sets: LottoSet[];
   onGenerate: (weighted: boolean) => void;
 }
 
@@ -12,6 +13,26 @@ export const Generator: React.FC<GeneratorProps> = ({ sets, onGenerate }) => {
     const count = LOTTO_STATS[num] || 0;
     const probability = ((count / (TOTAL_DRAWS * 7)) * 100).toFixed(1); // 전체 번호 개수 대비 확률
     return { count, probability };
+  };
+
+  const renderSimulationResult = (set: LottoSet) => {
+    if (!set.allResults || set.allResults.length === 0) {
+      return <div className="sim-result none">최근 200회차 내 당첨 기록 없음</div>;
+    }
+
+    return (
+      <div className="sim-results-container">
+        {set.allResults.slice(0, 3).map((result, idx) => (
+          <div key={idx} className={`sim-result rank-${result.rank}`}>
+            <span className="sim-rank">{result.rank}등</span> 당첨! 
+            <span className="sim-info"> ({result.drawNo}회: {result.matchCount}개{result.hasBonus ? '+B' : ''})</span>
+          </div>
+        ))}
+        {set.allResults.length > 3 && (
+          <div className="sim-more">외 {set.allResults.length - 3}건 더 있음</div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -35,7 +56,7 @@ export const Generator: React.FC<GeneratorProps> = ({ sets, onGenerate }) => {
             <div key={setIdx} className="set-row">
               <span className="set-label">조합 {setIdx + 1}</span>
               <div className="set-balls">
-                {set.map((num, idx) => {
+                {set.numbers.map((num, idx) => {
                   const { count, probability } = getStatsInfo(num);
                   return (
                     <div key={idx} className="ball-with-stats">
@@ -48,6 +69,7 @@ export const Generator: React.FC<GeneratorProps> = ({ sets, onGenerate }) => {
                   );
                 })}
               </div>
+              {renderSimulationResult(set)}
             </div>
           ))
         ) : (
