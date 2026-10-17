@@ -6,6 +6,18 @@ export interface DrawResult {
 
 export const LOTTO_HISTORY: DrawResult[] = [
   {
+    "drawNo": 1246,
+    "numbers": [
+      16,
+      22,
+      23,
+      24,
+      27,
+      28
+    ],
+    "bonus": 6
+  },
+  {
     "drawNo": 1245,
     "numbers": [
       4,
@@ -2392,17 +2404,5 @@ export const LOTTO_HISTORY: DrawResult[] = [
       44
     ],
     "bonus": 2
-  },
-  {
-    "drawNo": 1037,
-    "numbers": [
-      2,
-      14,
-      15,
-      22,
-      27,
-      33
-    ],
-    "bonus": 31
   }
 ];
